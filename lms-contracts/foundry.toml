@@ -1,0 +1,10 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.28"
+remappings = [
+  "forge-std/=lib/forge-std/src/",
+  # add the randomness lib remap once you install it:
+  # "randomness-solidity/=lib/randomness-solidity/"
+]
