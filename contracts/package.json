@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "blocklock-solidity": "^0.0.13",
+    "randomness-solidity": "^0.0.7"
+  }
+}
