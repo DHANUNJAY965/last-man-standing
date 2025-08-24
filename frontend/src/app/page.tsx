@@ -24,6 +24,8 @@ import {
   Play,
   Star,
   TestTube2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useGame } from "../hooks/useGame";
 import { TutorialModal } from "../components/TutorialModal";
@@ -34,6 +36,7 @@ import Image from "next/image"
 export default function HomePage() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState("");
 
   const { address, isConnected, chain } = useAccount();
   const { connect, connectors } = useConnect();
@@ -98,6 +101,16 @@ export default function HomePage() {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedAddress(type);
+      setTimeout(() => setCopiedAddress(""), 2000);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  };
+
   const recentBonusWinners = bonusWinners
     .filter((winner) => winner.revealed)
     .slice(-5);
@@ -154,28 +167,24 @@ export default function HomePage() {
         {/* Enhanced Navigation */}
         <nav className="p-4 sm:p-6 bg-slate-900/30 backdrop-blur-md border-b border-white/10">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-           
-
-<div className="flex items-center space-x-3">
-  <div className="p-2 ">
-    <Image
-      src="/favicon.png"  // ✅ replace with your image path
-      alt="Logo"
-      width={30}
-      height={30}
-      // className="w-6 h-6"
-    />
-  </div>
-  <div>
-    <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-      Last Man Standing
-    </h1>
-    <p className="text-xs text-gray-400 hidden sm:block">
-      Web3 Survival Game
-    </p>
-  </div>
-</div>
-
+            <div className="flex items-center space-x-3">
+              <div className="p-2 ">
+                <Image
+                  src="/favicon.png"
+                  alt="Logo"
+                  width={30}
+                  height={30}
+                />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  Last Man Standing
+                </h1>
+                <p className="text-xs text-gray-400 hidden sm:block">
+                  Web3 Survival Game
+                </p>
+              </div>
+            </div>
 
             <div className="flex items-center space-x-2 sm:space-x-4">
               <button
@@ -273,6 +282,21 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Game Title */}
+        <div className="text-center py-6 px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+            The Ultimate Web3 Survival Game
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-1">
+            <span className="text-red-400 font-semibold">
+              The only way you lose is if you stop playing.
+            </span>
+          </p>
+          <div className="font-semibold text-orange-400 mb-8">
+            Dynamic deposits, bonus rewards, built on Base Sepolia Testnet.
+          </div>
+        </div>
+
         {/* Loading State */}
         {roundLoading && (
           <div className="text-center py-16">
@@ -284,90 +308,58 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Main Content */}
+        {/* Main Game Content - Integrated Layout */}
         {!roundLoading && (
-          <>
-            {/* Hero Section with Prominent Pot */}
-            <div className="relative">
-              {/* Game Title */}
-              <div className="text-center py-6 px-4 sm:px-6">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  The Ultimate Web3 Survival Game
-                </h2>
-                <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-1">
-                  <span className="text-red-400 font-semibold">
-                    The only way you lose is if you stop playing.
-                  </span>
-                </p>
-                <div className="font-semibold text-orange-400 mb-8">
-                  Dynamic deposits, bonus rewards, built on Base Sepolia Testnet.
-                </div>
-              </div>
-
-              {/* Centered Pot Animation - The Star of the Show */}
-              <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-12">
-                <div className="bg-slate-800/30 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
-                  <PotAnimation potAmount={availablePot} />
-                </div>
-              </div>
-            </div>
-
-            {/* Game Content Layout - Fixed Height Cards */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-12">
+            <div className="bg-slate-800/30 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
                 
-                {/* Left Column - Game Stats & Round Info */}
-                <div className="flex flex-col h-full">
-                  <div className="bg-slate-800/40 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-2xl flex-1 flex flex-col">
-                    <div className="flex-1 space-y-6">
-                      {/* Enhanced Game Stats */}
-                      <div>
-                        <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                          <TrendingUp className="w-5 h-5 mr-2 text-purple-400" />
-                          Game Statistics
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="group bg-gradient-to-br from-slate-700/50 to-slate-800/50 hover:from-slate-600/50 hover:to-slate-700/50 rounded-xl p-4 text-center transition-all duration-300 border border-white/5 hover:border-white/10">
-                            <div className="flex items-center justify-center mb-2">
-                              <div className="p-2 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition-colors">
-                                <Users className="w-5 h-5 text-blue-400" />
-                              </div>
-                            </div>
-                            <div className="text-2xl font-bold text-white mb-1">
-                              {depositCount}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                              Total Players
+                {/* Left Panel - Game Stats & Current Leader */}
+                <div className="bg-slate-800/40 backdrop-blur-lg p-6 border-r border-white/10">
+                  <div className="space-y-6">
+                    {/* Game Statistics */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <TrendingUp className="w-5 h-5 mr-2 text-purple-400" />
+                        Game Stats
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 text-center border border-white/5">
+                          <div className="flex items-center justify-center mb-2">
+                            <div className="p-2 bg-blue-500/20 rounded-lg">
+                              <Users className="w-4 h-4 text-blue-400" />
                             </div>
                           </div>
+                          <div className="text-xl font-bold text-white mb-1">
+                            {depositCount}
+                          </div>
+                          <div className="text-xs text-gray-400">Players</div>
+                        </div>
 
-                          <div className="group bg-gradient-to-br from-slate-700/50 to-slate-800/50 hover:from-slate-600/50 hover:to-slate-700/50 rounded-xl p-4 text-center transition-all duration-300 border border-white/5 hover:border-white/10">
-                            <div className="flex items-center justify-center mb-2">
-                              <div className="p-2 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-colors">
-                                <Coins className="w-5 h-5 text-green-400" />
-                              </div>
-                            </div>
-                            <div className="text-2xl font-bold text-white mb-1">
-                              {nextDepositAmount}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                              Next Deposit (ETH)
+                        <div className="bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 text-center border border-white/5">
+                          <div className="flex items-center justify-center mb-2">
+                            <div className="p-2 bg-green-500/20 rounded-lg">
+                              <Coins className="w-4 h-4 text-green-400" />
                             </div>
                           </div>
+                          <div className="text-xl font-bold text-white mb-1">
+                            {nextDepositAmount}
+                          </div>
+                          <div className="text-xs text-gray-400">Next (ETH)</div>
                         </div>
                       </div>
 
-                      {/* Enhanced Round Info */}
+                      {/* Round Information */}
                       {currentRound && (
-                        <div className="bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-xl p-4 border border-white/5 backdrop-blur-sm flex-1">
-                          <h4 className="text-white font-medium mb-3 flex items-center text-sm">
+                        <div className="bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-xl p-3 border border-white/5">
+                          <div className="flex items-center mb-2">
                             <Trophy className="w-4 h-4 mr-2 text-yellow-400" />
-                            Round Information
-                          </h4>
-                          <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div className="space-y-2">
+                            <span className="text-white font-medium text-sm">Round Info</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="space-y-1">
                               <div className="flex justify-between text-gray-300">
-                                <span>Round ID:</span>
+                                <span>Round:</span>
                                 <span className="font-mono text-purple-400">
                                   #{currentRound.roundId.toString()}
                                 </span>
@@ -375,114 +367,177 @@ export default function HomePage() {
                               <div className="flex justify-between text-gray-300">
                                 <span>Status:</span>
                                 <span
-                                  className={`font-medium ${
+                                  className={`font-medium text-xs ${
                                     currentRound.isActive
                                       ? "text-green-400"
                                       : "text-red-400"
                                   }`}
                                 >
-                                  {currentRound.isActive
-                                    ? "🟢 Active"
-                                    : "🔴 Ended"}
+                                  {currentRound.isActive ? "🟢 Active" : "🔴 Ended"}
                                 </span>
                               </div>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
+                              <div className="flex justify-between text-gray-300">
+                                <span>Prize:</span>
+                                <span className="font-semibold text-yellow-400">
+                                  {availablePot} ETH
+                                </span>
+                              </div>
                               <div className="flex justify-between text-gray-300">
                                 <span>Players:</span>
                                 <span className="font-semibold text-blue-400">
                                   {depositCount}
                                 </span>
                               </div>
-                              <div className="flex justify-between text-gray-300">
-                                <span>Prize Pool:</span>
-                                <span className="font-semibold text-yellow-400">
-                                  {availablePot} ETH
-                                </span>
-                              </div>
                             </div>
                           </div>
-                          {currentRound.isActive &&
-                            isCurrentUserLastDepositor && (
-                              <div className="mt-3 p-2 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg border border-green-500/30">
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Current Leader */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <Clock className="w-5 h-5 mr-2 text-blue-400" />
+                        Current Leader
+                      </h3>
+                      {currentRound?.lastDepositor &&
+                        currentRound.lastDepositor !==
+                          "0x0000000000000000000000000000000000000000" ? (
+                        <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 rounded-xl p-4 border border-blue-500/30">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="text-blue-400 font-mono text-sm flex-1 mr-2">
+                                {formatAddress(currentRound.lastDepositor)}
+                              </div>
+                              <button
+                                onClick={() => copyToClipboard(currentRound.lastDepositor, 'leader')}
+                                className="p-1 hover:bg-blue-500/20 rounded transition-colors"
+                                title="Copy full address"
+                              >
+                                {copiedAddress === 'leader' ? (
+                                  <Check className="w-4 h-4 text-green-400" />
+                                ) : (
+                                  <Copy className="w-4 h-4 text-blue-400" />
+                                )}
+                              </button>
+                            </div>
+                            <div className="text-gray-400 text-xs">
+                              Player #{currentRound.depositCount.toString()}
+                            </div>
+                            <div className="text-center">
+                              <div className="text-white font-medium text-sm">
+                                Leading
+                              </div>
+                              <div className="text-blue-400 text-xs">
+                                {currentRound.lastDepositor.toLowerCase() ===
+                                address?.toLowerCase()
+                                  ? "👑 You!"
+                                  : "🎯 Them"}
+                              </div>
+                            </div>
+                            {isCurrentUserLastDepositor && (
+                              <div className="mt-2 p-2 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg border border-green-500/30">
                                 <div className="flex items-center justify-center space-x-2">
                                   <Star className="w-4 h-4 text-green-400 animate-pulse" />
                                   <span className="text-green-400 font-medium text-sm">
-                                    You're the current leader!
+                                    You're winning!
                                   </span>
                                 </div>
                               </div>
                             )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-gradient-to-br from-gray-800/30 to-slate-800/30 rounded-xl p-4 border border-gray-500/30">
+                          <div className="text-center py-4">
+                            <div className="text-gray-400 text-sm mb-1">
+                              No leader yet
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              Waiting for first player...
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* Center Column - Timer & Actions */}
-                <div className="flex flex-col h-full">
-                  <div className="bg-slate-800/40 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-2xl flex-1 flex flex-col">
-                    <div className="flex-1 space-y-6">
-                      {/* Enhanced Countdown Timer */}
-                      {currentRound?.isActive && currentRound?.depositCount > 0n ? (
-                        <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 rounded-xl p-6 border border-red-500/30 backdrop-blur-sm">
-                          <div className="flex items-center justify-center mb-4">
-                            <div className="p-2 bg-red-500/20 rounded-lg mr-3">
-                              <Timer className="w-6 h-6 text-red-400" />
-                            </div>
-                            <span className="text-red-400 font-semibold text-lg">
-                              Time Remaining
-                            </span>
+                {/* Center Panel - Pot & Timer */}
+                <div className="flex flex-col justify-center">
+                  <PotAnimation potAmount={availablePot} />
+                  
+                  {/* Timer directly below pot */}
+                  <div className="p-6">
+                    {currentRound?.isActive && currentRound?.depositCount > 0n ? (
+                      <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 rounded-xl p-4 border border-red-500/30">
+                        <div className="flex items-center justify-center mb-3">
+                          <div className="p-1 bg-red-500/20 rounded-lg mr-2">
+                            <Timer className="w-5 h-5 text-red-400" />
                           </div>
-                          <div className="text-3xl sm:text-4xl font-mono font-bold text-center text-white mb-2">
-                            {formattedTimeLeft}
-                          </div>
-                          <div className="text-center text-gray-400 text-sm">
-                            {timeLeft === 0
-                              ? "⏰ Time's up! Click to end round"
-                              : "⏳ Until round ends"}
-                          </div>
+                          <span className="text-red-400 font-semibold">
+                            Time Remaining
+                          </span>
                         </div>
-                      ) : (
-                        <div className="bg-gradient-to-br from-gray-800/30 to-slate-800/30 rounded-xl p-6 border border-gray-500/30 backdrop-blur-sm">
-                          <div className="flex items-center justify-center mb-4">
-                            <div className="p-2 bg-gray-500/20 rounded-lg mr-3">
-                              <Clock className="w-6 h-6 text-gray-400" />
-                            </div>
-                            <span className="text-gray-400 font-semibold text-lg">
-                              Waiting for Players
-                            </span>
-                          </div>
-                          <div className="text-3xl sm:text-4xl font-mono font-bold text-center text-white mb-2">
-                            --:--:--
-                          </div>
-                          <div className="text-center text-gray-400 text-sm">
-                            ⏳ Timer starts with first deposit
-                          </div>
+                        <div className="text-2xl font-mono font-bold text-center text-white mb-1">
+                          {formattedTimeLeft}
                         </div>
-                      )}
+                        <div className="text-center text-gray-400 text-xs">
+                          {timeLeft === 0
+                            ? "⏰ Time's up! Click to end round"
+                            : "⏳ Until round ends"}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-gradient-to-br from-gray-800/30 to-slate-800/30 rounded-xl p-4 border border-gray-500/30">
+                        <div className="flex items-center justify-center mb-3">
+                          <div className="p-1 bg-gray-500/20 rounded-lg mr-2">
+                            <Clock className="w-5 h-5 text-gray-400" />
+                          </div>
+                          <span className="text-gray-400 font-semibold">
+                            Waiting for Players
+                          </span>
+                        </div>
+                        <div className="text-2xl font-mono font-bold text-center text-white mb-1">
+                          --:--:--
+                        </div>
+                        <div className="text-center text-gray-400 text-xs">
+                          ⏳ Timer starts with first deposit
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                      {/* Enhanced Insufficient Balance Warning */}
+                {/* Right Panel - Actions & Recent Bonuses */}
+                <div className="bg-slate-800/40 backdrop-blur-lg p-6 border-l border-white/10">
+                  <div className="space-y-6">
+                    {/* Action Buttons */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <Play className="w-5 h-5 mr-2 text-green-400" />
+                        Actions
+                      </h3>
+                      
+                      {/* Insufficient Balance Warning */}
                       {isConnected && hasInsufficientBalance && (
-                        <div className="bg-gradient-to-br from-orange-900/30 to-red-900/30 border border-orange-500/30 rounded-xl p-4 backdrop-blur-sm">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <div className="p-2 bg-orange-500/20 rounded-lg">
-                              <AlertTriangle className="w-4 h-4 text-orange-400" />
-                            </div>
+                        <div className="bg-gradient-to-br from-orange-900/30 to-red-900/30 border border-orange-500/30 rounded-xl p-3 mb-4">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <AlertTriangle className="w-4 h-4 text-orange-400" />
                             <span className="text-orange-400 font-semibold text-sm">
                               Insufficient Balance
                             </span>
                           </div>
-                          <p className="text-orange-300 text-xs leading-relaxed">
-                            You need {nextDepositAmount} ETH but only have{" "}
-                            {balance ? formatEther(balance.value) : "0"} ETH. Get
-                            more testnet ETH from the faucet above!
+                          <p className="text-orange-300 text-xs">
+                            Need {nextDepositAmount} ETH but have{" "}
+                            {balance ? formatEther(balance.value) : "0"} ETH
                           </p>
                         </div>
                       )}
 
-                      {/* Enhanced Action Buttons */}
-                      <div className="space-y-3 mt-auto">
+                      <div className="space-y-3">
                         {/* Deposit Button */}
                         {isConnected &&
                           isCorrectChain &&
@@ -494,11 +549,11 @@ export default function HomePage() {
                                 !currentRound?.isActive ||
                                 hasInsufficientBalance
                               }
-                              className={`group w-full py-3 px-6 rounded-xl font-semibold transition-all transform ${
+                              className={`w-full py-3 px-4 rounded-xl font-semibold transition-all transform text-sm ${
                                 isDepositing || hasInsufficientBalance
                                   ? "bg-gray-600/50 cursor-not-allowed border border-gray-500/30"
-                                  : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 hover:scale-105 active:scale-95 shadow-lg hover:shadow-green-500/25 border border-green-500/30"
-                              } text-white backdrop-blur-sm`}
+                                  : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 hover:scale-105 active:scale-95 shadow-lg border border-green-500/30"
+                              } text-white`}
                             >
                               {isDepositing ? (
                                 <div className="flex items-center justify-center space-x-2">
@@ -512,19 +567,19 @@ export default function HomePage() {
                                 </div>
                               ) : (
                                 <div className="flex items-center justify-center space-x-2">
-                                  <Play className="w-4 h-4 group-hover:animate-pulse" />
-                                  <span>Join Game - {nextDepositAmount} ETH</span>
+                                  <Play className="w-4 h-4" />
+                                  <span>Join - {nextDepositAmount} ETH</span>
                                 </div>
                               )}
                             </button>
                           )}
 
-                        {/* Enhanced Claim/Timeout Buttons */}
+                        {/* Claim/Timeout Buttons */}
                         {canClaimWinnings && (
                           <button
                             onClick={() => claimPrize(currentRound!.roundId)}
                             disabled={isClaimPending}
-                            className="w-full py-3 px-6 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-yellow-500/25 border border-yellow-500/30 backdrop-blur-sm"
+                            className="w-full py-3 px-4 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm"
                           >
                             {isClaimPending ? (
                               <div className="flex items-center justify-center space-x-2">
@@ -533,8 +588,8 @@ export default function HomePage() {
                               </div>
                             ) : (
                               <div className="flex items-center justify-center space-x-2">
-                                <Trophy className="w-4 h-4 animate-bounce" />
-                                <span>Claim Your Victory!</span>
+                                <Trophy className="w-4 h-4" />
+                                <span>Claim Victory!</span>
                               </div>
                             )}
                           </button>
@@ -544,17 +599,17 @@ export default function HomePage() {
                           <button
                             onClick={triggerTimeout}
                             disabled={isTimeoutPending}
-                            className="w-full py-3 px-6 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-red-500/25 border border-red-500/30 backdrop-blur-sm"
+                            className="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm"
                           >
                             {isTimeoutPending ? (
                               <div className="flex items-center justify-center space-x-2">
                                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>Ending Round...</span>
+                                <span>Ending...</span>
                               </div>
                             ) : (
                               <div className="flex items-center justify-center space-x-2">
-                                <Clock className="w-4 h-4 animate-pulse" />
-                                <span>End Round (Time Up!)</span>
+                                <Clock className="w-4 h-4" />
+                                <span>End Round</span>
                               </div>
                             )}
                           </button>
@@ -564,11 +619,11 @@ export default function HomePage() {
                         {!isConnected && (
                           <button
                             onClick={handleConnect}
-                            className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 border border-purple-500/30 backdrop-blur-sm"
+                            className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm"
                           >
                             <div className="flex items-center justify-center space-x-2">
                               <Wallet className="w-4 h-4" />
-                              <span>Connect Wallet to Play</span>
+                              <span>Connect to Play</span>
                             </div>
                           </button>
                         )}
@@ -576,139 +631,79 @@ export default function HomePage() {
                         {isConnected && !isCorrectChain && (
                           <button
                             onClick={handleSwitchChain}
-                            className="w-full py-3 px-6 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-yellow-500/25 border border-yellow-500/30 backdrop-blur-sm"
+                            className="w-full py-3 px-4 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm"
                           >
                             <div className="flex items-center justify-center space-x-2">
                               <Zap className="w-4 h-4" />
-                              <span>Switch to Base Sepolia</span>
+                              <span>Switch Network</span>
                             </div>
                           </button>
                         )}
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Right Column - Activity Feed */}
-                <div className="flex flex-col h-full">
-                  <div className="bg-slate-800/40 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-2xl flex-1 flex flex-col">
-                    <div className="flex-1 space-y-6">
-                      {/* Last Depositor */}
-                      {currentRound?.lastDepositor &&
-                        currentRound.lastDepositor !==
-                          "0x0000000000000000000000000000000000000000" ? (
-                        <div>
-                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                            <div className="p-1 bg-blue-500/20 rounded-lg">
-                              <Clock className="w-4 h-4 text-blue-400" />
-                            </div>
-                            <span>Current Leader</span>
-                          </h3>
-                          <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 rounded-xl p-4 border border-blue-500/30 backdrop-blur-sm">
-                            <div className="space-y-2">
-                              <div className="text-blue-400 font-mono text-sm">
-                                {formatAddress(currentRound.lastDepositor)}
-                              </div>
-                              <div className="text-gray-400 text-xs">
-                                Player #{currentRound.depositCount.toString()}
-                              </div>
-                              <div className="text-center">
-                                <div className="text-white font-medium text-sm">
-                                  Leading
-                                </div>
-                                <div className="text-blue-400 text-xs">
-                                  {currentRound.lastDepositor.toLowerCase() ===
-                                  address?.toLowerCase()
-                                    ? "👑 You!"
-                                    : "🎯 Them"}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                            <div className="p-1 bg-gray-500/20 rounded-lg">
-                              <Clock className="w-4 h-4 text-gray-400" />
-                            </div>
-                            <span>Current Leader</span>
-                          </h3>
-                          <div className="bg-gradient-to-br from-gray-800/30 to-slate-800/30 rounded-xl p-4 border border-gray-500/30 backdrop-blur-sm">
-                            <div className="text-center py-6">
-                              <div className="text-gray-400 text-sm mb-2">
-                                No leader yet
-                              </div>
-                              <div className="text-gray-500 text-xs">
-                                Waiting for first player...
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Recent Bonus Winners */}
+                    {/* Recent Bonuses */}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <Zap className="w-5 h-5 mr-2 text-yellow-400" />
+                        Recent Bonuses
+                      </h3>
                       {recentBonusWinners.length > 0 ? (
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                            <div className="p-1 bg-yellow-500/20 rounded-lg">
-                              <Zap className="w-4 h-4 text-yellow-400" />
-                            </div>
-                            <span>Recent Bonuses</span>
-                          </h3>
-                          <div className="space-y-3 flex-1 overflow-hidden">
-                            <div className="max-h-80 overflow-y-auto space-y-3">
-                              {recentBonusWinners.slice(0, 4).map((winner, index) => (
-                                <div
-                                  key={`${winner.roundId}-${winner.depositNumber}`}
-                                  className="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-xl p-3 border border-yellow-500/30 backdrop-blur-sm hover:border-yellow-400/40 transition-colors"
-                                >
-                                  <div className="space-y-1">
-                                    <div className="text-yellow-400 font-mono text-xs">
-                                      {formatAddress(winner.depositor)}
-                                    </div>
-                                    <div className="text-gray-400 text-xs">
-                                      Player #{winner.depositNumber.toString()} • Round #{winner.roundId.toString()}
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <div className="text-yellow-400 font-semibold text-xs">
-                                        {winner.bonusPercentage.toString()}% Bonus
-                                      </div>
-                                      <div className="text-white text-xs">
-                                        {formatEther(winner.bonusAmount)} ETH
-                                      </div>
-                                    </div>
-                                    {winner.depositor.toLowerCase() ===
-                                      address?.toLowerCase() && (
-                                      <div className="text-center mt-2">
-                                        <span className="inline-flex items-center px-2 py-1 bg-green-900/30 text-green-400 text-xs font-semibold rounded-full border border-green-500/30">
-                                          <Star className="w-2 h-2 mr-1" />
-                                          Your Win!
-                                        </span>
-                                      </div>
+                        <div className="space-y-3 max-h-60 overflow-y-auto">
+                          {recentBonusWinners.slice(0, 3).map((winner, index) => (
+                            <div
+                              key={`${winner.roundId}-${winner.depositNumber}`}
+                              className="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-xl p-3 border border-yellow-500/30"
+                            >
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <div className="text-yellow-400 font-mono text-xs flex-1 mr-2">
+                                    {formatAddress(winner.depositor)}
+                                  </div>
+                                  <button
+                                    onClick={() => copyToClipboard(winner.depositor, `bonus-${index}`)}
+                                    className="p-1 hover:bg-yellow-500/20 rounded transition-colors"
+                                    title="Copy full address"
+                                  >
+                                    {copiedAddress === `bonus-${index}` ? (
+                                      <Check className="w-3 h-3 text-green-400" />
+                                    ) : (
+                                      <Copy className="w-3 h-3 text-yellow-400" />
                                     )}
+                                  </button>
+                                </div>
+                                <div className="text-gray-400 text-xs">
+                                  Player #{winner.depositNumber.toString()} • Round #{winner.roundId.toString()}
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <div className="text-yellow-400 font-semibold text-xs">
+                                    {winner.bonusPercentage.toString()}% Bonus
+                                  </div>
+                                  <div className="text-white text-xs">
+                                    {formatEther(winner.bonusAmount)} ETH
                                   </div>
                                 </div>
-                              ))}
+                                {winner.depositor.toLowerCase() ===
+                                  address?.toLowerCase() && (
+                                  <div className="text-center mt-1">
+                                    <span className="inline-flex items-center px-2 py-1 bg-green-900/30 text-green-400 text-xs font-semibold rounded-full border border-green-500/30">
+                                      <Star className="w-2 h-2 mr-1" />
+                                      Your Win!
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
+                          ))}
                         </div>
                       ) : (
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                            <div className="p-1 bg-gray-500/20 rounded-lg">
-                              <Zap className="w-4 h-4 text-gray-400" />
+                        <div className="bg-gradient-to-br from-gray-800/30 to-slate-800/30 rounded-xl p-4 border border-gray-500/30">
+                          <div className="text-center py-4">
+                            <div className="text-gray-400 text-sm mb-1">
+                              No bonus winners yet
                             </div>
-                            <span>Recent Bonuses</span>
-                          </h3>
-                          <div className="bg-gradient-to-br from-gray-800/30 to-slate-800/30 rounded-xl p-4 border border-gray-500/30 backdrop-blur-sm flex-1 flex items-center justify-center">
-                            <div className="text-center py-8">
-                              <div className="text-gray-400 text-sm mb-2">
-                                No bonus winners yet
-                              </div>
-                              <div className="text-gray-500 text-xs">
-                                Every 10th player gets a bonus!
-                              </div>
+                            <div className="text-gray-500 text-xs">
+                              Every 10th player gets a bonus!
                             </div>
                           </div>
                         </div>
@@ -718,179 +713,179 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-
-            {/* Enhanced Game Information Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-              <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
-                <h3 className="text-2xl font-bold text-white mb-8 text-center">
-                  How the Game Works
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="group text-center p-6 bg-gradient-to-br from-purple-900/20 to-indigo-900/20 rounded-xl border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-purple-500/25 transition-all">
-                      <Coins className="w-8 h-8 text-white" />
-                    </div>
-                    <h4 className="text-white font-semibold mb-3 text-lg">
-                      Dynamic Deposits
-                    </h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      Each deposit equals 0.01 ETH plus 0.5% of the current
-                      prize pool, making stakes progressively higher
-                    </p>
-                  </div>
-
-                  <div className="group text-center p-6 bg-gradient-to-br from-green-900/20 to-emerald-900/20 rounded-xl border border-green-500/20 hover:border-green-400/40 transition-all duration-300 hover:transform hover:scale-105">
-                    <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-green-500/25 transition-all">
-                      <Zap className="w-8 h-8 text-white" />
-                    </div>
-                    <h4 className="text-white font-semibold mb-3 text-lg">
-                      Bonus Rewards
-                    </h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      Every 10th player receives a random bonus of 1–5% of the
-                      pot through verifiable randomness, encrypted using Blocklock
-                    </p>
-                  </div>
-
-                  <div className="group text-center p-6 bg-gradient-to-br from-orange-900/20 to-red-900/20 rounded-xl border border-orange-500/20 hover:border-orange-400/40 transition-all duration-300 hover:transform hover:scale-105">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-orange-500/25 transition-all">
-                      <Trophy className="w-8 h-8 text-white" />
-                    </div>
-                    <h4 className="text-white font-semibold mb-3 text-lg">
-                      Winner Takes All
-                    </h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      If no deposits for 24 hours, the last player wins the
-                      entire remaining prize pool
-                    </p>
-                  </div>
-                </div>
-
-                {/* Additional Features */}
-                <div className="mt-8 pt-8 border-t border-white/10">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
-                      <div className="p-2 bg-blue-500/20 rounded-lg">
-                        <Timer className="w-5 h-5 text-blue-400" />
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">
-                          24-Hour Timer
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          Resets with each deposit
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
-                      <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <Zap className="w-5 h-5 text-purple-400" />
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">
-                          VRF Randomness
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          Verifiable & fair
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
-                      <div className="p-2 bg-green-500/20 rounded-lg">
-                        <Users className="w-5 h-5 text-green-400" />
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">
-                          No Player Limit
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          Join anytime
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
-                      <div className="p-2 bg-yellow-500/20 rounded-lg">
-                        <Trophy className="w-5 h-5 text-yellow-400" />
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">
-                          Instant Payouts
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          Automated rewards
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Enhanced CTA Section */}
-            <div className="mt-16 text-center px-4 sm:px-6 pb-16">
-              <div className="max-w-4xl mx-auto">
-                <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 backdrop-blur-lg rounded-2xl p-8 sm:p-12 border border-purple-500/20 shadow-2xl">
-                  <h3 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-4">
-                    Ready to Test Your Survival Skills?
-                  </h3>
-                  <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                    Join the ultimate Web3 survival game where strategy meets
-                    luck, and only the persistent prevail.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-                    {!isConnected ? (
-                      <button
-                        onClick={handleConnect}
-                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 border border-purple-500/30"
-                      >
-                        Connect Wallet & Start Playing
-                      </button>
-                    ) : (
-                      <div className="text-green-400 font-medium flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                        <span>Wallet Connected - Ready to Play!</span>
-                      </div>
-                    )}
-
-                    <button
-                      onClick={() => setShowTutorial(true)}
-                      className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-white rounded-xl font-medium transition-all border border-slate-600/50 hover:border-slate-500/50 backdrop-blur-sm"
-                    >
-                      Learn How to Play
-                    </button>
-                  </div>
-
-                  <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <span>Base Sepolia Testnet</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <span>Free Test ETH Available</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                      <span>Fully Decentralized</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                      <span>Verifiable Randomness</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                      <span>Blocklock Encryption</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+          </div>
         )}
+
+        {/* Enhanced Game Information Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16">
+          <div className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
+            <h3 className="text-2xl font-bold text-white mb-8 text-center">
+              How the Game Works
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="group text-center p-6 bg-gradient-to-br from-purple-900/20 to-indigo-900/20 rounded-xl border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-purple-500/25 transition-all">
+                  <Coins className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="text-white font-semibold mb-3 text-lg">
+                  Dynamic Deposits
+                </h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  Each deposit equals 0.01 ETH plus 0.5% of the current
+                  prize pool, making stakes progressively higher
+                </p>
+              </div>
+
+              <div className="group text-center p-6 bg-gradient-to-br from-green-900/20 to-emerald-900/20 rounded-xl border border-green-500/20 hover:border-green-400/40 transition-all duration-300 hover:transform hover:scale-105">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-green-500/25 transition-all">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="text-white font-semibold mb-3 text-lg">
+                  Bonus Rewards
+                </h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  Every 10th player receives a random bonus of 1–5% of the
+                  pot through verifiable randomness, encrypted using Blocklock
+                </p>
+              </div>
+
+              <div className="group text-center p-6 bg-gradient-to-br from-orange-900/20 to-red-900/20 rounded-xl border border-orange-500/20 hover:border-orange-400/40 transition-all duration-300 hover:transform hover:scale-105">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-orange-500/25 transition-all">
+                  <Trophy className="w-8 h-8 text-white" />
+                </div>
+                <h4 className="text-white font-semibold mb-3 text-lg">
+                  Winner Takes All
+                </h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  If no deposits for 24 hours, the last player wins the
+                  entire remaining prize pool
+                </p>
+              </div>
+            </div>
+
+            {/* Additional Features */}
+            <div className="mt-8 pt-8 border-t border-white/10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Timer className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">
+                      24-Hour Timer
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      Resets with each deposit
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
+                  <div className="p-2 bg-purple-500/20 rounded-lg">
+                    <Zap className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">
+                      VRF Randomness
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      Verifiable & fair
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
+                  <div className="p-2 bg-green-500/20 rounded-lg">
+                    <Users className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">
+                      No Player Limit
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      Join anytime
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-lg border border-white/5">
+                  <div className="p-2 bg-yellow-500/20 rounded-lg">
+                    <Trophy className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">
+                      Instant Payouts
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      Automated rewards
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced CTA Section */}
+        <div className="mt-16 text-center px-4 sm:px-6 pb-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 backdrop-blur-lg rounded-2xl p-8 sm:p-12 border border-purple-500/20 shadow-2xl">
+              <h3 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-4">
+                Ready to Test Your Survival Skills?
+              </h3>
+              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                Join the ultimate Web3 survival game where strategy meets
+                luck, and only the persistent prevail.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+                {!isConnected ? (
+                  <button
+                    onClick={handleConnect}
+                    className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 border border-purple-500/30"
+                  >
+                    Connect Wallet & Start Playing
+                  </button>
+                ) : (
+                  <div className="text-green-400 font-medium flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>Wallet Connected - Ready to Play!</span>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => setShowTutorial(true)}
+                  className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-white rounded-xl font-medium transition-all border border-slate-600/50 hover:border-slate-500/50 backdrop-blur-sm"
+                >
+                  Learn How to Play
+                </button>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span>Base Sepolia Testnet</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span>Free Test ETH Available</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span>Fully Decentralized</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <span>Verifiable Randomness</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                  <span>Blocklock Encryption</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Tutorial Modal */}
         <TutorialModal
