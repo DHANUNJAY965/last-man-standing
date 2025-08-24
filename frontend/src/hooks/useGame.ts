@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount, useWatchContractEvent } from 'wagmi'
-import { formatEther, parseEther } from 'viem'
+import { formatEther } from 'viem'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../utils/contractABI'
 
 export interface Round {
@@ -55,7 +55,7 @@ export const useGame = () => {
       enabled: !!CONTRACT_ADDRESS, // Only requires contract address, not wallet connection
       refetchInterval: 5000, // Refetch every 5 seconds
     }
-  }) as { data: Round | undefined, refetch: () => void, error: any, isLoading: boolean }
+  }) as { data: Round | undefined, refetch: () => void, error: unknown, isLoading: boolean }
 
   // Read available pot (excluding reserved bonuses) - ALWAYS enabled
   const { 
@@ -101,7 +101,7 @@ export const useGame = () => {
       enabled: !!currentRound && !!CONTRACT_ADDRESS, // Only requires contract and round data
       refetchInterval: 5000,
     }
-  }) as { data: BonusWinner[] | undefined, refetch: () => void, error: any }
+  }) as { data: BonusWinner[] | undefined, refetch: () => void, error: unknown }
 
   // Write contracts - these still require wallet connection
   const { 
@@ -219,13 +219,13 @@ export const useGame = () => {
       
       // Set user-friendly error messages
       if (depositError) {
-        setError(depositError.message || 'Failed to make deposit')
+        setError((depositError as Error)?.message || 'Failed to make deposit')
       }
       if (claimError) {
-        setError(claimError.message || 'Failed to claim winnings')
+        setError((claimError as Error)?.message || 'Failed to claim winnings')
       }
       if (timeoutError) {
-        setError(timeoutError.message || 'Failed to trigger timeout')
+        setError((timeoutError as Error)?.message || 'Failed to trigger timeout')
       }
     }
 
@@ -278,9 +278,9 @@ export const useGame = () => {
       })
       
       console.log('Deposit transaction submitted:', result)
-    } catch (error: any) {
+    } catch (error) {
       console.error('Deposit error:', error)
-      setError(error?.message || 'Failed to make deposit')
+      setError((error as Error)?.message || 'Failed to make deposit')
       setIsDepositing(false)
     }
   }
@@ -306,9 +306,9 @@ export const useGame = () => {
         functionName: 'claimWinnings',
         args: [roundId],
       })
-    } catch (error: any) {
+    } catch (error) {
       console.error('Claim error:', error)
-      setError(error?.message || 'Failed to claim winnings')
+      setError((error as Error)?.message || 'Failed to claim winnings')
     }
   }
 
@@ -332,9 +332,9 @@ export const useGame = () => {
         abi: CONTRACT_ABI,
         functionName: 'checkTimeoutAndEndRound',
       })
-    } catch (error: any) {
+    } catch (error) {
       console.error('Timeout error:', error)
-      setError(error?.message || 'Failed to trigger timeout')
+      setError((error as Error)?.message || 'Failed to trigger timeout')
     }
   }
 

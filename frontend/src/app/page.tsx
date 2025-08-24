@@ -23,7 +23,7 @@ import {
   TrendingUp,
   Play,
   Star,
-  TestTube2,
+
   Copy,
   Check,
 } from "lucide-react";
@@ -442,7 +442,7 @@ export default function HomePage() {
                                 <div className="flex items-center justify-center space-x-2">
                                   <Star className="w-4 h-4 text-green-400 animate-pulse" />
                                   <span className="text-green-400 font-medium text-sm">
-                                    You're winning!
+                                    {"You're winning!"}
                                   </span>
                                 </div>
                               </div>
