@@ -471,7 +471,7 @@ export default function HomePage() {
                   
                   {/* Timer directly below pot */}
                   <div className="p-6">
-                    {currentRound?.isActive && currentRound?.depositCount > 0n ? (
+                    {currentRound?.isActive && currentRound?.depositCount > 0 ? (
                       <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 rounded-xl p-4 border border-red-500/30">
                         <div className="flex items-center justify-center mb-3">
                           <div className="p-1 bg-red-500/20 rounded-lg mr-2">
