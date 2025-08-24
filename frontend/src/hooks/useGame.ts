@@ -357,7 +357,7 @@ export const useGame = () => {
 
   const canTriggerTimeout = timeLeft === 0 && 
     currentRound?.isActive && 
-    currentRound?.depositCount > 0n &&
+    currentRound?.depositCount > 0 &&
     isConnected &&
     isCorrectChain
 
